@@ -15,11 +15,9 @@ def main():
     # 🌟 헤드라인 뉴스 요약 및 멘트 생성
     print("🌟 오늘의 헤드라인 뉴스입니다.")
     for idx, news in enumerate(head_line_news):
-        if idx not in [2, 4]:
-            continue  # idx 2, 4가 아닐 경우 건너뜀
 
         title, url = news["title"], news["url"]
-        print(f"📰 ({idx+1}) {title}\n")
+        print(f"📰 ({idx+1}) {title}")
 
         body = extract_article_body(url)
         if not body:
@@ -30,7 +28,7 @@ def main():
         if result["success"]:
             if not result['dj_ment']:
                 print("⚠️ DJ 멘트 파싱 실패, 원문 출력:")
-                print(result['content'])
+                print(f"{result['content']}\n")
             else : 
                 print(f"📝 요약: {result['summary']}")
                 print(f"💬 DJ 멘트: {result['dj_ment']}\n")
