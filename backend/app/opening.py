@@ -11,7 +11,7 @@ def generate_opening_ment():
     today = datetime.datetime.now().strftime("%Y년 %m월 %d일 %A")
     
     prompt = (
-        f"{today}입니다. AI 라디오 DJ로서 오늘 하루를 시작하는 청취자들에게 감성적이면서도 따뜻한 오프닝 멘트를 만들어주세요. "
+        f"{today}입니다. AI 라디오 DJ로서 오늘 하루를 마무리하는 청취자들에게 감성적이면서도 따뜻한 오프닝 멘트를 너무 길지 않게 만들어주세요. "
     )
 
     response = client.chat.completions.create(

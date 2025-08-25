@@ -7,15 +7,19 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def make_closing_ment(current_news):
-    if not current_news:
-        return "어제 뉴스 돌아보기는 여기까지입니다. 편안한 하루 보내세요."
+def generate_closing_ment():
+    today = datetime.datetime.now().strftime("%Y년 %m월 %d일 %A")
+    
+    prompt = (
+        f"오늘은 {today}입니다. AI 라디오 DJ로서 오늘 방송을 마무리하며 마무리는 오늘과 어울리는 잔잔한 인사로 정리해 주세요. 청취자에게 감성적이고 따뜻하게 인사하는 클로징 멘트를 만들어주세요. "
+        f"진심 어린 인사와 함께, 각자의 일상으로 돌아가는 청취자들에게 따뜻한 작별 인사를 전해주세요. "
+        f"너무 길지 않게 3~4문장 이내로 간결하게 작성해주세요."
+    )
 
-    lines = [f"그 외에도 "]
-    for news in current_news[:3]:
-        lines.append(f" - {news['title']}")
-    if len(current_news) > 3:
-        lines.append("...등의 소식이 전해졌답니다.")
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.8
+    )
 
-    lines.append("오늘도 함께해주셔서 감사합니다. 따뜻한 하루 보내세요 ☺️")
-    return "\n".join(lines)
+    return response.choices[0].message.content.strip()
