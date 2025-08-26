@@ -17,5 +17,4 @@ def make_closing_ment(current_news):
     if len(current_news) > 3:
         lines.append("...등의 소식이 전해졌답니다.")
 
-    # lines.append("오늘도 함께해주셔서 감사합니다. 따뜻한 하루 보내세요 ☺️")
     return "\n".join(lines)
