@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def narration(story_path="story/story.json"):
+def narration(story_path):
     with open(story_path, "r", encoding="utf-8") as f:
         story = json.load(f)
         stories = story["stories"]  

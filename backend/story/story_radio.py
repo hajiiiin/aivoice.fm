@@ -13,7 +13,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def run_story_radio():
     story_filter()
     filter_stories_by_llm()
-    narration()
+    narration("story/story.json")
 
 if __name__ == "__main__":
     run_story_radio()

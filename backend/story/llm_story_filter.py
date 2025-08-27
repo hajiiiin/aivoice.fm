@@ -6,21 +6,34 @@ from tqdm import tqdm
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    
+def filter_stories_by_llm(input_path="story/candidate_stories.json", output_path="story/story.json"):
+    with open(input_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        candidates = data["candidates"]
 
-def llm_is_story(text: str) -> bool:
+    formatted_stories = "\n\n".join(
+        f"[{i+1}] {item['content'].strip()}" for i, item in enumerate(candidates)
+    )
+
     prompt = f"""
-    아래 글이 라디오 청취자의 사연인지 판단해주세요. 사연이란 개인적인 경험, 감정, 일상의 사건을 나누는 글입니다.
-    예: 가족 이야기, 회사 일, 감동적인 순간, 고민 등
+        당신은 감성적인 AI 라디오 DJ입니다.
+        다음은 청취자들이 보낸 사연 후보입니다. 이 중에서 청취자들과 함께 나누면 좋을 사연 3개를 골라주세요.
 
-    조건:
-    - 단순한 신청곡, 인사, 날씨 얘기, 짧은 코멘트는 사연이 아닙니다.
-    - 사연이면 "True", 아니면 "False"만 단답형으로 답해주세요.
+        기준:
+        - 감동적이거나 공감할 수 있는 사연
+        - 따뜻하거나 생각할 거리를 주는 이야기
+        - 단순한 신청곡, 인사, 날씨 얘기, 짧은 코멘트는 제외
 
-    글:
-    \"\"\"
-    {text}
-    \"\"\"
-    """
+        사연 목록:
+        \"\"\"
+        {formatted_stories}
+        \"\"\"
+
+        선택한 사연 번호만 콤마로 구분해서 아래 형식으로 답해주세요.  
+        예: 2, 5, 8
+        """
+
     try:
         response = client.chat.completions.create(
             model="gpt-4",
@@ -28,31 +41,26 @@ def llm_is_story(text: str) -> bool:
             temperature=0,
         )
         result = response.choices[0].message.content.strip()
-        return result.lower().startswith("true")
+        print("LLM 응답:", result)
+
+        selected_indices = []
+        for part in result.split(","):
+            try:
+                idx = int(part.strip()) - 1
+                if 0 <= idx < len(candidates):
+                    selected_indices.append(idx)
+            except ValueError:
+                continue
+
+        selected_stories = [candidates[i] for i in selected_indices]
+
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump({"stories": selected_stories}, f, ensure_ascii=False, indent=2)
+
+        print(f"LLM 선정 완료: {len(selected_stories)}개 사연 저장 → {output_path}")
+
     except Exception as e:
-        print("OpenAI Error:", e)
-        return False
-    
-def filter_stories_by_llm(input_path="story/candidate_stories.json", output_path="story/story.json"):
-    with open(input_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    LIMIT = 10 #테스트용 갯수 제한
-
-    filtered = []
-    for item in tqdm(data["candidates"], desc="LLM filtering"):
-        try:
-            if llm_is_story(item["content"]):
-                filtered.append(item)
-        except Exception as e:
-            print(f"[{item['id']}] 처리 중 오류 발생: {e}")
-            continue
-
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump({"stories": filtered}, f, ensure_ascii=False, indent=2)
-
-    print(f"LLM 필터링 완료: {len(filtered)}개 저장됨 → {output_path}")
+        print("OpenAI API 오류:", e)
 
 if __name__ == "__main__":
     filter_stories_by_llm()
