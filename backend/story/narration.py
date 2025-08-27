@@ -7,20 +7,21 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def run_story_radio(story_path="story.json"):
-    with open("story.json", "r", encoding="utf-8") as f:
+def narration(story_path="story/story.json"):
+    with open(story_path, "r", encoding="utf-8") as f:
         story = json.load(f)
         stories = story["stories"]  
 
     for i,story in enumerate(stories):
-        print(f"\n📬 청취자 {story['author']}님의 사연입니다. 『{story['title']}』\n")
+        author = story.get("author", "익명의 청취자")
+
+        print(f"\n📬 {author}님의 사연입니다.\n")
         time.sleep(1)
 
         prompt = f"""
         당신은 감성적인 AI 라디오 DJ입니다. 지금 청취자가 사연을 보냈습니다.
 
-        사연 제목: {story['title']}
-        작성자: {story['author']}
+        작성자: {author}
         내용:
         \"\"\"
         {story['content']}
@@ -56,4 +57,4 @@ def run_story_radio(story_path="story.json"):
             print("📻 오늘의 사연은 여기까지입니다. 함께 해주셔서 감사합니다 🎧")
 
 if __name__ == "__main__":
-    run_story_radio()
+    narration()
