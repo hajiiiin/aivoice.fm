@@ -7,11 +7,33 @@ export default function Dashboard() {
     story: false,
     music: false,
   });
+  const [scripts, setScripts] = useState([]);
   const [storyText, setStoryText] = useState('');
 
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
     setSelectedContents((prev) => ({ ...prev, [name]: checked }));
+  };
+
+  const handlePlayRadio = async () => {
+    try {
+      const res = await fetch('/api/run-radio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedContents),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log('받은 스크립트:', data.scripts);
+        setScripts(data.scripts);
+        alert('라디오 스크립트 생성 완료!');
+      } else {
+        alert('실패했습니다.');
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleSaveStory = async () => {
@@ -98,7 +120,14 @@ export default function Dashboard() {
         </section>
       )}
 
-      <button>라디오 재생</button>
+      <button onClick={handlePlayRadio}>라디오 재생</button>
+
+      {scripts.map((s, idx) => (
+        <section key={idx}>
+          <h2>{s.type.toUpperCase()}</h2>
+          <p>{s.content}</p>
+        </section>
+      ))}
     </main>
   );
 }

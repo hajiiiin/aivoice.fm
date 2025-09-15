@@ -10,13 +10,12 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def narration(story_path):
     with open(story_path, "r", encoding="utf-8") as f:
         story = json.load(f)
-        stories = story["stories"]  
+        stories = story["stories"]
 
-    for i,story in enumerate(stories):
+    results = []  # 리턴용 리스트
+
+    for i, story in enumerate(stories):
         author = story.get("author", "익명의 청취자")
-
-        print(f"\n📬 {author}님의 사연입니다.\n")
-        time.sleep(1)
 
         prompt = f"""
         당신은 감성적인 AI 라디오 DJ입니다. 지금 청취자가 사연을 보냈습니다.
@@ -45,16 +44,16 @@ def narration(story_path):
         )
 
         gpt_text = response.choices[0].message.content.strip()
-        print(f"🎙️ DJ: {gpt_text}")
 
-        print("🎵 자, 그럼 이 곡 함께 들어볼까요? 잠시 감상하고 다시 만나요.\n")
-        time.sleep(2)
+        # 리턴할 데이터 구조
+        results.append({
+            "author": author,
+            "story": story['content'],
+            "dj_ment": gpt_text
+        })
 
-        if i < len(stories) - 1:
-            print("📻 다음 사연으로 넘어가 보겠습니다...\n")
-            time.sleep(1)
-        else:
-            print("📻 오늘의 사연은 여기까지입니다. 함께 해주셔서 감사합니다 🎧")
+    return results
 
 if __name__ == "__main__":
-    narration()
+    data = narration("stories.json")
+    print(json.dumps(data, ensure_ascii=False, indent=2))

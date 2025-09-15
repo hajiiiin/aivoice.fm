@@ -47,6 +47,7 @@ def run_music_radio():
 
     output = response.choices[0].message.content.strip()
     print(output)
+    return output
 
 if __name__ == "__main__":
     run_music_radio()
