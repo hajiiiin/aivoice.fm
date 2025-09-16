@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.opening import generate_opening_ment
 from app.closing import generate_closing_ment
-from news.news_main import run_news_radio
+from news.news_radio import run_news_radio
 from story.story_radio import run_story_radio
 from music.music_radio import run_music_radio
 
@@ -29,10 +29,10 @@ BLOCK_HANDLERS = {
     "story_discussion": lambda keyword: {"type": "story_discussion", "content": run_story_radio(["story_discussion"], keyword=keyword)},
 
     # 음악
-    "music": lambda keyword: {"type": "music", "content": run_music_radio()},
-    "music_trend": lambda keyword: {"type": "music_trend", "content": run_music_trend()},
-    "music_review": lambda keyword: {"type": "music_review", "content": run_music_review()},
-    "music_request": lambda keyword: {"type": "music_request", "content": run_music_request()},
+    "music_history": lambda keyword: {"type": "music_history", "content": run_music_radio(["music_history"], keyword=keyword)},
+    "music_trend": lambda keyword: {"type": "music_trend", "content":  run_music_radio(["music_trend"], keyword=keyword)},
+    "music_genre": lambda keyword: {"type": "music_genre", "content":  run_music_radio(["music_genre"], keyword=keyword)},
+    "music_artist": lambda keyword: {"type": "music_artist", "content":  run_music_radio(["music_artist"], keyword=keyword)},
 }
 
 

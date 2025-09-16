@@ -25,6 +25,7 @@ export default function ContentsSelector({ onChange }) {
 
   return (
     <div className="mt-2 flex grid-cols-4 flex-wrap gap-2">
+      {/* 뉴스 */}
       <ContentsBlock
         name="headline"
         label="📰 헤드라인 뉴스"
@@ -43,16 +44,44 @@ export default function ContentsSelector({ onChange }) {
         active={selectedBlocks.some((b) => b.name === "current")}
         onClick={handleChange}
       />
+
+      {/* 사연 */}
       <ContentsBlock
-        name="story"
-        label="🎙️ 사연"
-        active={selectedBlocks.some((b) => b.name === "story")}
+        name="story_main"
+        label="🎙️ 사연 공감"
+        active={selectedBlocks.some((b) => b.name === "story_main")}
         onClick={handleChange}
       />
       <ContentsBlock
-        name="music"
-        label="🎶 음악 이슈"
-        active={selectedBlocks.some((b) => b.name === "music")}
+        name="story_discussion"
+        label="💬 사연 토론"
+        active={selectedBlocks.some((b) => b.name === "story_discussion")}
+        onClick={handleChange}
+      />
+
+      {/* 음악 */}
+      <ContentsBlock
+        name="music_history"
+        label="📀 음악 역사"
+        active={selectedBlocks.some((b) => b.name === "music_history")}
+        onClick={handleChange}
+      />
+      <ContentsBlock
+        name="music_trend"
+        label="📊 최신 음악 트렌드"
+        active={selectedBlocks.some((b) => b.name === "music_trend")}
+        onClick={handleChange}
+      />
+      <ContentsBlock
+        name="music_genre"
+        label="🎧 장르 탐험"
+        active={selectedBlocks.some((b) => b.name === "music_genre")}
+        onClick={handleChange}
+      />
+      <ContentsBlock
+        name="music_artist"
+        label="🌟 아티스트 집중 조명"
+        active={selectedBlocks.some((b) => b.name === "music_artist")}
         onClick={handleChange}
       />
     </div>

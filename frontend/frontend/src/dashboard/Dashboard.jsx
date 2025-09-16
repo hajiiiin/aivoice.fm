@@ -6,21 +6,31 @@ export default function Dashboard() {
   const [selectedBlocks, setSelectedBlocks] = useState([]);
   const [selectedBlocksShow, setSelectedBlocksShow] = useState([]);
   const [scripts, setScripts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handlePlayRadio = async () => {
     alert("라디오 스크립트 생성 시작!");
-    const res = await fetch("/api/run-radio", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ blocks: selectedBlocks, keyword }),
-    });
+    setLoading(true); // 로딩 시작
+    setScripts([]);
+    try {
+      const res = await fetch("/api/run-radio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocks: selectedBlocks, keyword }),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      setScripts(data.scripts);
-      alert("라디오 스크립트 생성 완료!");
-    } else {
-      alert("실패했습니다.");
+      if (res.ok) {
+        const data = await res.json();
+        setScripts(data.scripts);
+        alert("라디오 스크립트 생성 완료!");
+      } else {
+        alert("실패했습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("에러 발생!");
+    } finally {
+      setLoading(false); // 로딩 종료
     }
   };
 
@@ -70,10 +80,22 @@ export default function Dashboard() {
       </section>
       <button
         onClick={handlePlayRadio}
-        className="mt-6 w-full rounded-lg bg-emerald-600 py-2 text-white"
+        disabled={loading} // 로딩 중이면 비활성화
+        className={`mt-6 w-full rounded-lg py-2 text-white ${
+          loading ? "bg-gray-400" : "bg-emerald-600"
+        }`}
       >
-        라디오 재생
+        {loading ? "생성 중..." : "라디오 재생"}
       </button>
+
+      {loading && (
+        <div className="mt-4 flex justify-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent"></div>
+          <span className="ml-2 text-emerald-600">
+            라디오 스크립트를 생성 중입니다...
+          </span>
+        </div>
+      )}
 
       {scripts.map((s, idx) => (
         <section key={idx} className="mt-4 rounded-lg border bg-gray-50 p-4">

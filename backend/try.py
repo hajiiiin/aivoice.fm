@@ -3,7 +3,7 @@ from app.closing import generate_closing_ment # 클로징
 
 
 # 프로그램별 실행 함수
-from news.news_main import run_news_radio
+from backend.news.news_radio import run_news_radio
 from story.story_radio import run_story_radio
 from music.music_radio import run_music_radio
 
