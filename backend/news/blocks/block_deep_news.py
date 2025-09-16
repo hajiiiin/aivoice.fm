@@ -3,7 +3,7 @@ from news.llm.summarizer import summarize_article
 
 def block_deep_news(date_text, deep_news) -> str:
     output_lines = []
-    output_lines.append(f"🗓️ {date_text}\n")
+
     output_lines.append("🔎 오늘의 심층 뉴스입니다.")
 
     for idx, news in enumerate(deep_news):

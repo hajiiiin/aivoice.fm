@@ -15,7 +15,9 @@ export default function ContentsSelector({ onChange }) {
       }
 
       if (onChange) {
-        onChange(updated);
+        const names = updated.map((b) => b.name); // API용
+        const labels = updated.map((b) => b.label); // UI용
+        onChange(names, labels);
       }
       return updated;
     });

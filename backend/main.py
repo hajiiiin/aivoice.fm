@@ -17,23 +17,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 블록 매핑
+BLOCK_HANDLERS = {
+    # 뉴스
+    "headline": lambda keyword: {"type": "headline", "content": run_news_radio(["headline"], keyword=keyword)},
+    "deep": lambda keyword: {"type": "deep", "content": run_news_radio(["deep"], keyword=keyword)},
+    "current": lambda keyword: {"type": "current", "content": run_news_radio(["current"], keyword=keyword)},
+
+    # 사연
+    "story_main": lambda keyword: {"type": "story_main", "content": run_story_radio(["story_main"], keyword=keyword)},
+    "story_discussion": lambda keyword: {"type": "story_discussion", "content": run_story_radio(["story_discussion"], keyword=keyword)},
+
+    # 음악
+    "music": lambda keyword: {"type": "music", "content": run_music_radio()},
+    "music_trend": lambda keyword: {"type": "music_trend", "content": run_music_trend()},
+    "music_review": lambda keyword: {"type": "music_review", "content": run_music_review()},
+    "music_request": lambda keyword: {"type": "music_request", "content": run_music_request()},
+}
+
+
 @app.post("/api/run-radio")
 def run_radio(selected: dict = Body(...)):
     blocks = selected.get("blocks", [])
     keyword = selected.get("keyword", None)
     scripts = []
 
+    # 오프닝 
     scripts.append({"type": "opening", "content": generate_opening_ment(keyword)})
 
-    if any(b in blocks for b in ["headline", "deep", "current"]):
-        scripts.append({"type": "news", "content": run_news_radio(blocks)})
+    # 선택된 블록 순서대로 실행
+    for block in blocks:
+        if block in BLOCK_HANDLERS:
+            scripts.append(BLOCK_HANDLERS[block](keyword))
 
-    if "story" in blocks:
-        scripts.append({"type": "story", "content": run_story_radio()})
-
-    if "music" in blocks:
-        scripts.append({"type": "music", "content": run_music_radio()})
-
+    # 클로징        
     scripts.append({"type": "closing", "content": generate_closing_ment(keyword)})
 
     return {"scripts": scripts}

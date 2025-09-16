@@ -4,6 +4,7 @@ import ContentsSelector from "./components/ContentsSelector";
 export default function Dashboard() {
   const [keyword, setKeyword] = useState("");
   const [selectedBlocks, setSelectedBlocks] = useState([]);
+  const [selectedBlocksShow, setSelectedBlocksShow] = useState([]);
   const [scripts, setScripts] = useState([]);
 
   const handlePlayRadio = async () => {
@@ -40,19 +41,24 @@ export default function Dashboard() {
 
       <section className="my-6">
         <label>콘텐츠 선택:</label>
-        <ContentsSelector onChange={setSelectedBlocks} />
+        <ContentsSelector
+          onChange={(names, labels) => {
+            setSelectedBlocks(names); // API용
+            setSelectedBlocksShow(labels); // UI용
+          }}
+        />
       </section>
       <hr />
       <section className="mt-6">
         <label>선택한 콘텐츠:</label>
         <div className="mt-2 flex flex-wrap gap-2">
-          {selectedBlocks.length > 0 ? (
-            selectedBlocks.map((block, idx) => (
+          {selectedBlocksShow.length > 0 ? (
+            selectedBlocksShow.map((label, idx) => (
               <span
                 key={idx}
                 className="flex items-center gap-2 rounded-full border border-gray-200  bg-white px-4 py-2 text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50"
               >
-                {idx + 1}. {block.label}
+                {idx + 1}. {label}
               </span>
             ))
           ) : (
