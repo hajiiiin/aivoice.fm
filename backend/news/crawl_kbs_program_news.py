@@ -69,20 +69,24 @@ def crawl_kbs_program_news():
     # 날짜
     broadcast_date = extract_date_from_html(soup)
 
-    # headline news 
-    head_line_section = soup.select_one("div.head-line")
-    head_line_news = parse_news_items(head_line_section) if head_line_section else []
+    # 주요뉴스(심층 뉴스용) - main-news-wrapper
+    deep_section = soup.select_one("div.main-news-wrapper")
+    deep_news = parse_news_items(deep_section, selector="a.main-news") if deep_section else []
 
-    # current news (나머지 뉴스들)
+    # 헤드라인 뉴스 - box-contents has-wrap
+    headline_section = soup.select_one("div.box-contents div.box-contents.has-wrap")
+    head_line_news = parse_news_items(headline_section, selector="a.box-content") if headline_section else []
+
+    # current news (기존 나머지 뉴스들)
     current_section = soup.select_one("div.main-current-event-box div.box-contents.has-wrap")
-    exclude_keywords = ["오프닝", "클로징", "헤드라인"] # 필요없는 항목 필터링
+    exclude_keywords = ["오프닝", "클로징", "헤드라인"] 
     current_news = parse_news_items(current_section, exclude_title_keywords=exclude_keywords) if current_section else []
 
-    # 중복 제거: 헤드라인 뉴스 제목과 동일한 항목 current_news에서 제거
-    head_line_titles = set(news["title"] for news in head_line_news)
-    current_news = [news for news in current_news if news["title"] not in head_line_titles]
+    # 중복 제거
+    all_titles = set(n["title"] for n in (deep_news + head_line_news))
+    current_news = [news for news in current_news if news["title"] not in all_titles]
 
-    return broadcast_date, head_line_news, current_news
+    return broadcast_date, deep_news, head_line_news, current_news
 
 # 기사 본문 크롤링
 def extract_article_body(url: str) -> str:

@@ -1,130 +1,77 @@
-import React, { useState } from 'react';
+import { useState } from "react";
+import ContentsSelector from "./components/ContentsSelector";
 
 export default function Dashboard() {
-  const [keyword, setKeyword] = useState('');
-  const [selectedContents, setSelectedContents] = useState({
-    news: false,
-    story: false,
-    music: false,
-  });
+  const [keyword, setKeyword] = useState("");
+  const [selectedBlocks, setSelectedBlocks] = useState([]);
   const [scripts, setScripts] = useState([]);
-  const [storyText, setStoryText] = useState('');
-
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-    setSelectedContents((prev) => ({ ...prev, [name]: checked }));
-  };
 
   const handlePlayRadio = async () => {
-    try {
-      const res = await fetch('/api/run-radio', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(selectedContents),
-      });
+    alert("라디오 스크립트 생성 시작!");
+    const res = await fetch("/api/run-radio", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ blocks: selectedBlocks, keyword }),
+    });
 
-      if (res.ok) {
-        const data = await res.json();
-        console.log('받은 스크립트:', data.scripts);
-        setScripts(data.scripts);
-        alert('라디오 스크립트 생성 완료!');
-      } else {
-        alert('실패했습니다.');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleSaveStory = async () => {
-    try {
-      const res = await fetch('/api/save-story', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ story: storyText }),
-      });
-      if (res.ok) {
-        alert('사연이 저장되었습니다.');
-        setStoryText('');
-      } else {
-        alert('저장 실패');
-      }
-    } catch (error) {
-      console.error('저장 오류:', error);
+    if (res.ok) {
+      const data = await res.json();
+      setScripts(data.scripts);
+      alert("라디오 스크립트 생성 완료!");
+    } else {
+      alert("실패했습니다.");
     }
   };
 
   return (
-    <main style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>🎙️ AI 라디오 설정</h1>
+    <main className=" mx-auto max-w-xl py-8">
+      <h1 className="text-3xl font-bold">🎙️ AI 라디오 설정</h1>
 
-      <section style={{ marginBottom: '2rem' }}>
-        <label>오늘의 키워드: </label>
+      <section className="mt-6">
+        <label>오늘의 키워드:</label>
         <input
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="예: 가을, 감성, 출근"
-          style={{ width: '100%', padding: '8px', marginTop: '8px' }}
+          className="mt-2 w-full rounded-lg border p-2"
         />
       </section>
 
-      <section style={{ marginBottom: '2rem' }}>
-        <label>오늘 사용할 콘텐츠:</label>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              name="news"
-              checked={selectedContents.news}
-              onChange={handleCheckboxChange}
-            />{' '}
-            뉴스
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              name="story"
-              checked={selectedContents.story}
-              onChange={handleCheckboxChange}
-            />{' '}
-            사연
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              name="music"
-              checked={selectedContents.music}
-              onChange={handleCheckboxChange}
-            />{' '}
-            음악 이슈
-          </label>
+      <section className="my-6">
+        <label>콘텐츠 선택:</label>
+        <ContentsSelector onChange={setSelectedBlocks} />
+      </section>
+      <hr />
+      <section className="mt-6">
+        <label>선택한 콘텐츠:</label>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {selectedBlocks.length > 0 ? (
+            selectedBlocks.map((block, idx) => (
+              <span
+                key={idx}
+                className="flex items-center gap-2 rounded-full border border-gray-200  bg-white px-4 py-2 text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50"
+              >
+                {idx + 1}. {block.label}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500">
+              아직 선택한 콘텐츠가 없습니다.
+            </span>
+          )}
         </div>
       </section>
-
-      {selectedContents.story && (
-        <section style={{ marginBottom: '2rem' }}>
-          <label>사연 입력:</label>
-          <textarea
-            value={storyText}
-            onChange={(e) => setStoryText(e.target.value)}
-            placeholder="청취자의 사연을 입력하세요"
-            rows={6}
-            style={{ width: '100%', padding: '8px', marginTop: '8px' }}
-          />
-          <button onClick={handleSaveStory} style={{ marginTop: '8px' }}>
-            사연 저장
-          </button>
-        </section>
-      )}
-
-      <button onClick={handlePlayRadio}>라디오 재생</button>
+      <button
+        onClick={handlePlayRadio}
+        className="mt-6 w-full rounded-lg bg-emerald-600 py-2 text-white"
+      >
+        라디오 재생
+      </button>
 
       {scripts.map((s, idx) => (
-        <section key={idx}>
-          <h2>{s.type.toUpperCase()}</h2>
+        <section key={idx} className="mt-4 rounded-lg border bg-gray-50 p-4">
+          <h2 className="font-bold">{s.type.toUpperCase()}</h2>
           <p>{s.content}</p>
         </section>
       ))}

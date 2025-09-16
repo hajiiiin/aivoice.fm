@@ -1,15 +1,25 @@
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
-from llm.prompt_builder import build_summary_prompt
+from news.llm.prompt_builder import build_summary_prompt
 import re
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # 기사 본문을 받아 요약과 DJ 멘트를 생성하는 함수
-def summarize_article(article_text: str, model: str = "gpt-4o") -> dict:
-    prompt = build_summary_prompt(article_text)
+def summarize_article(article_text: str, model: str = "gpt-4o", mode: str = "headline") -> dict:
+    if mode == "deep":
+        target_length = "1500~2000자 (10~15분 분량)"
+        max_tokens = 2000
+    elif mode == "headline":
+        target_length = "700~800자 (5분 분량)"
+        max_tokens = 1200
+    else:  # current news or short
+        target_length = "300~400자 (2~3분 분량)"
+        max_tokens = 600
+
+    prompt = build_summary_prompt(article_text, target_length=target_length, mode=mode)
 
     try:
         response = client.chat.completions.create(
@@ -22,7 +32,7 @@ def summarize_article(article_text: str, model: str = "gpt-4o") -> dict:
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=800,
+            max_tokens=max_tokens,
         )
 
         content = response.choices[0].message.content.strip()

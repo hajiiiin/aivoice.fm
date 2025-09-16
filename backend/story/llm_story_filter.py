@@ -18,7 +18,7 @@ def filter_stories_by_llm(input_path="story/candidate_stories.json", output_path
 
     prompt = f"""
         당신은 감성적인 AI 라디오 DJ입니다.
-        다음은 청취자들이 보낸 사연 후보입니다. 이 중에서 청취자들과 함께 나누면 좋을 사연 3개를 골라주세요.
+        다음은 청취자들이 보낸 사연 후보입니다. 이 중에서 청취자들과 함께 나누면 좋을 사연 6개를 골라주세요.
 
         기준:
         - 감동적이거나 공감할 수 있는 사연
