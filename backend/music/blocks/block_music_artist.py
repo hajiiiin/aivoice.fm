@@ -3,23 +3,29 @@ import os
 from dotenv import load_dotenv
 import random
 import json
+from common.prompt_utils import build_block_prompt
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# 로컬 JSON에서 아티스트 불러오기
-def load_artists(path="data/artists.json"):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)["artists"]
-
 # 키워드 기반 아티스트 선택 (LLM)
-def pick_artist_by_keyword(keyword: str) -> str:
-    prompt = f"""
-    당신은 음악 전문 AI입니다.
-    키워드 "{keyword}"와 어울리는 아티스트 1명을 추천해주세요.
-    한국/해외 아티스트 모두 가능하며, 전 세계적으로 유명한 뮤지션 위주로 골라주세요.
-    답변은 아티스트 이름만 출력하세요.
-    """
+def pick_artist_by_llm(keyword: str = None) -> str:
+    if keyword:
+        prompt = f"""
+        당신은 음악 전문 AI입니다.
+        키워드 "{keyword}"와 어울리는 아티스트 1명을 추천해주세요.
+        한국/해외 아티스트 모두 가능하며, 전 세계적으로 유명한 뮤지션 위주로 골라주세요.
+        답변은 아티스트 이름만 출력하세요.
+        """
+    else:
+        prompt = """
+        당신은 음악 전문 AI입니다.
+        전 세계적으로 널리 알려지고 사랑받는 아티스트 1명을 무작위로 추천해주세요.
+        한국/해외 모두 가능하며, 대중적으로 유명한 뮤지션이면 됩니다.
+        답변은 아티스트 이름만 출력하세요.
+        """
+
+    
     res = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
@@ -28,16 +34,17 @@ def pick_artist_by_keyword(keyword: str) -> str:
     return res.choices[0].message.content.strip()
 
 # 메인 블록
-def block_music_artist(keyword=None):
-    if keyword:
-        selected_artist = pick_artist_by_keyword(keyword)
-    else:
-        artists = load_artists()
-        selected_artist = random.choice(artists)["name"]
+def block_music_artist(keyword=None, prev_type=None, context=None):
 
-    prompt = f"""
+    selected_artist = pick_artist_by_llm(keyword)
+
+    base_instruction  = f"""
     당신은 감성적인 라디오 DJ입니다.
-    오늘은 "{selected_artist}" 아티스트를 집중 조명하는 코너입니다.
+    이전 코너는 {prev_type}이었고, 이런 분위기였습니다:
+    {context}
+
+    이제 [MUSIC_ARTIST] 코너를 진행해주세요.
+    오늘은 "{selected_artist}" 아티스트를 집중 조명해주세요.
 
     요구사항:
     1. 아티스트의 특징/음악적 매력을 2~3문장으로 소개해주세요.
@@ -49,6 +56,15 @@ def block_music_artist(keyword=None):
 
     키워드: {keyword}
     """
+
+    prompt = build_block_prompt(
+        base_instruction=base_instruction,
+        block_name="MUSIC_ARTIST",
+        keyword=keyword,
+        prev_type=prev_type,
+        context=context
+    )
+
 
     response = client.chat.completions.create(
         model="gpt-4o",

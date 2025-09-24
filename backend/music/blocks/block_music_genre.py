@@ -2,18 +2,23 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import random
+from common.prompt_utils import build_block_prompt
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def block_music_genre(keyword=None):
+def block_music_genre(keyword=None, prev_type=None, context=None):
     genres = ["재즈", "록", "EDM", "발라드", "힙합", "인디"]
     selected_genre = random.choice(genres)
 
-    prompt = f"""
+    base_instruction = f"""
     당신은 감성적인 라디오 DJ입니다.
-    오늘은 "{selected_genre}" 장르를 탐험하는 코너입니다.
+    이전 코너는 {prev_type}이었고, 이런 분위기였습니다:
+    {context}
 
+    이제 [MUSIC_GENRE] 코너로 자연스럽게 이어주세요.
+    오늘은 "{selected_genre}" 장르를 탐험하는 시간입니다.
+    
     요구사항:
     1. 이 장르의 특징을 2~3문장으로 소개해주세요.
     2. 대표적인 아티스트나 곡을 1~2개 예시로 들어주세요.
@@ -24,6 +29,15 @@ def block_music_genre(keyword=None):
 
     키워드: {keyword}
     """
+
+    prompt = build_block_prompt(
+        base_instruction=base_instruction,
+        block_name="MUSIC_ARTIST",
+        keyword=keyword,
+        prev_type=prev_type,
+        context=context
+    )
+
 
     response = client.chat.completions.create(
         model="gpt-4o",

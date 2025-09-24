@@ -12,7 +12,7 @@ from story.story_filter.select_discussion_stories import select_discussion_stori
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def run_story_radio(blocks: list[str], story_path="story/story.json", keyword=None) -> str:
+def run_story_radio(blocks: list[str], story_path="story/story.json", keyword=None, prev_type=None, context=None) -> str:
     output_lines = []
 
     # 사연 필터링 + 선정
@@ -29,9 +29,9 @@ def run_story_radio(blocks: list[str], story_path="story/story.json", keyword=No
     # 사연 공감 및 토론 멘트 생성
     for i, item in enumerate(stories):
         if "story_main" in blocks:
-            output_lines.append(block_story_main(item, keyword))
+            output_lines.append(block_story_main(item, keyword, prev_type, context))
         if "story_discussion" in blocks and i in discussion_indices:
-            output_lines.append(block_story_discussion(item, keyword))
+            output_lines.append(block_story_discussion(item, keyword, prev_type, context))
 
     return "\n\n".join(output_lines)
 

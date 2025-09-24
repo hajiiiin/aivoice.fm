@@ -1,14 +1,20 @@
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
+from common.prompt_utils import build_block_prompt
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def block_music_trend(keyword=None):
-    prompt = f"""
+def block_music_trend(keyword=None, prev_type=None, context=None):
+    base_instruction = f"""
     당신은 감성적인 라디오 DJ입니다.
-    최신 음악 트렌드와 차트를 소개하는 코너입니다.
+
+    이전 코너는 {prev_type}이었고, 이런 분위기였습니다:
+    {context}
+
+    이제 [MUSIC_TREND] 코너로 이어주세요.
+    최신 음악 트렌드와 차트를 소개하는 시간입니다.
 
     요구사항:
     1. 최근 1~2주간의 실제 글로벌/한국 음악 차트 트렌드를 다루듯 소개해주세요.
@@ -23,6 +29,13 @@ def block_music_trend(keyword=None):
     
     키워드: {keyword}
     """
+    prompt = build_block_prompt(
+    base_instruction=base_instruction,
+    block_name="MUSIC_ARTIST",
+    keyword=keyword,
+    prev_type=prev_type,
+    context=context
+    )
 
     response = client.chat.completions.create(
         model="gpt-4o",

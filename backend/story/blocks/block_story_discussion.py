@@ -1,15 +1,16 @@
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
+from common.prompt_utils import build_block_prompt
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def block_story_discussion(story, keyword=None):
+def block_story_discussion(story, keyword=None, prev_type=None, context=None):
     author = story.get("author", "익명 청취자")
     content = story["content"]
 
-    prompt = f"""
+    base_instruction = f"""
     당신은 라디오 DJ입니다.  
     아래 사연을 바탕으로, 하나의 "토론 주제"를 뽑아내고 청취자와 함께 생각을 나누는 코너를 만듭니다.
 
@@ -27,6 +28,14 @@ def block_story_discussion(story, keyword=None):
     5. 마지막에 청취자 참여 유도 멘트를 추가해주세요.  
        (예: "여러분은 어떻게 생각하시나요? 댓글이나 채팅으로 남겨주세요.")
     """
+
+    prompt = build_block_prompt(
+        base_instruction=base_instruction,
+        block_name="STORY_DISCUSSION",
+        keyword=keyword,
+        prev_type=prev_type,
+        context=context
+    )
 
     response = client.chat.completions.create(
         model="gpt-4o",
