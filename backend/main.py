@@ -20,19 +20,19 @@ app.add_middleware(
 # 블록 매핑
 BLOCK_HANDLERS = {
     # 뉴스
-    "headline": lambda keyword, prev_type, context: run_news_radio(["headline"], keyword=keyword, prev_type=prev_type, context=context),
-    "deep":     lambda keyword, prev_type, context: run_news_radio(["deep"], keyword=keyword, prev_type=prev_type, context=context),
-    "current":  lambda keyword, prev_type, context: run_news_radio(["current"], keyword=keyword, prev_type=prev_type, context=context),
+    "headline": lambda keyword, language, prev_type, context: run_news_radio(["headline"], keyword=keyword, language=language, prev_type=prev_type, context=context),
+    "deep":     lambda keyword, language, prev_type, context: run_news_radio(["deep"], keyword=keyword, language=language, prev_type=prev_type, context=context),
+    "current":  lambda keyword, language, prev_type, context: run_news_radio(["current"], keyword=keyword, language=language, prev_type=prev_type, context=context),
 
     # 사연
-    "story_main":       lambda keyword, prev_type, context: run_story_radio(["story_main"], keyword=keyword, prev_type=prev_type, context=context),
-    "story_discussion": lambda keyword, prev_type, context: run_story_radio(["story_discussion"], keyword=keyword, prev_type=prev_type, context=context),
+    "story_main":       lambda keyword, language, prev_type, context: run_story_radio(["story_main"], keyword=keyword, language=language, prev_type=prev_type, context=context),
+    "story_discussion": lambda keyword, language, prev_type, context: run_story_radio(["story_discussion"], keyword=keyword, language=language, prev_type=prev_type, context=context),
 
     # 음악
-    "music_history": lambda keyword, prev_type, context: run_music_radio(["music_history"], keyword=keyword, prev_type=prev_type, context=context),
-    "music_trend":   lambda keyword, prev_type, context: run_music_radio(["music_trend"], keyword=keyword, prev_type=prev_type, context=context),
-    "music_genre":   lambda keyword, prev_type, context: run_music_radio(["music_genre"], keyword=keyword, prev_type=prev_type, context=context),
-    "music_artist":  lambda keyword, prev_type, context: run_music_radio(["music_artist"], keyword=keyword, prev_type=prev_type, context=context),
+    "music_history": lambda keyword, language, prev_type, context: run_music_radio(["music_history"], keyword=keyword, language=language, prev_type=prev_type, context=context),
+    "music_trend":   lambda keyword, language, prev_type, context: run_music_radio(["music_trend"], keyword=keyword, language=language, prev_type=prev_type, context=context),
+    "music_genre":   lambda keyword, language, prev_type, context: run_music_radio(["music_genre"], keyword=keyword, language=language, prev_type=prev_type, context=context),
+    "music_artist":  lambda keyword, language, prev_type, context: run_music_radio(["music_artist"], keyword=keyword, language=language, prev_type=prev_type, context=context),
 }
 
 @app.post("/api/run-radio")
@@ -45,9 +45,9 @@ def run_radio(selected: dict = Body(...)):
     prev_type, context = None, ""
 
     # 오프닝 
-    opening = generate_opening_ment(keyword, language=language)
-    scripts.append({"type": "opening", "content": opening})
-    prev_type, context = "opening", opening[-400:]
+    # opening = generate_opening_ment(keyword, language=language)
+    # scripts.append({"type": "opening", "content": opening})
+    # prev_type, context = "opening", opening[-400:]
 
     # 선택된 블록 순서대로 실행
     for block in blocks:
@@ -57,7 +57,7 @@ def run_radio(selected: dict = Body(...)):
             prev_type, context = block, content[-400:]
 
     # 클로징        
-    closing = generate_closing_ment(keyword, language=language)
-    scripts.append({"type": "closing", "content": closing})
+    # closing = generate_closing_ment(keyword, language=language)
+    # scripts.append({"type": "closing", "content": closing})
 
     return {"scripts": scripts}

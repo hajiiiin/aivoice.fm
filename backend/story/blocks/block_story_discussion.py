@@ -32,6 +32,8 @@ def block_story_discussion(story, keyword=None, prev_type=None, context=None, la
     else:  # English version
         base_instruction = f"""
         You are a warm and engaging radio DJ.  
+        Please answer ONLY in English.
+        
         Based on the listener's story below, create a "discussion topic" segment to share with the audience.
 
         Story Author: {author}

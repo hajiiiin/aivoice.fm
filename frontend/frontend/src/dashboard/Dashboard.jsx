@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [selectedBlocksShow, setSelectedBlocksShow] = useState([]);
   const [scripts, setScripts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [language, setLanguage] = useState<"ko" | "en">("ko");
+  const [language, setLanguage] = useState("ko");
 
   const handlePlayRadio = async () => {
     alert("라디오 스크립트 생성 시작!");
@@ -63,7 +63,7 @@ export default function Dashboard() {
           </button>
         </div>
       </section>
-      
+
       <section className="mt-6">
         <label>오늘의 키워드:</label>
         <input
@@ -111,7 +111,7 @@ export default function Dashboard() {
           loading ? "bg-gray-400" : "bg-emerald-600"
         }`}
       >
-        {loading ? "생성 중..." : "라디오 재생"}
+        {loading ? "생성 중..." : "스크립트 생성"}
       </button>
 
       {loading && (

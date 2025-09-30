@@ -1,7 +1,7 @@
 from news.crawl_kbs_program_news import extract_article_body
 from news.llm.summarizer import summarize_article
 
-def block_news_summary(date_text, head_line_news, prev_type=None, context=None) -> str:
+def block_news_summary(date_text, head_line_news, prev_type=None, context=None, language="ko") -> str:
     output_lines = []
     output_lines.append(f"🗓️ {date_text}\n")
     output_lines.append("🌟 오늘의 헤드라인 뉴스입니다.")
@@ -20,7 +20,8 @@ def block_news_summary(date_text, head_line_news, prev_type=None, context=None) 
             mode="headline",
             prev_type=prev_type,
             context=context,
-            block_name="HEADLINE_NEWS"
+            block_name="HEADLINE_NEWS",
+            language=language
         )
 
         if result["success"]:
