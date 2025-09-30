@@ -39,24 +39,25 @@ BLOCK_HANDLERS = {
 def run_radio(selected: dict = Body(...)):
     blocks = selected.get("blocks", [])
     keyword = selected.get("keyword", None)
+    language = selected.get("language", "ko")
     scripts = []
 
     prev_type, context = None, ""
 
     # 오프닝 
-    opening = generate_opening_ment(keyword)
+    opening = generate_opening_ment(keyword, language=language)
     scripts.append({"type": "opening", "content": opening})
     prev_type, context = "opening", opening[-400:]
 
     # 선택된 블록 순서대로 실행
     for block in blocks:
         if block in BLOCK_HANDLERS:
-            content = BLOCK_HANDLERS[block](keyword, prev_type, context)
+            content = BLOCK_HANDLERS[block](keyword, language, prev_type, context)
             scripts.append({"type": block, "content": content})
             prev_type, context = block, content[-400:]
 
     # 클로징        
-    closing = generate_closing_ment(keyword)
+    closing = generate_closing_ment(keyword, language=language)
     scripts.append({"type": "closing", "content": closing})
 
     return {"scripts": scripts}
