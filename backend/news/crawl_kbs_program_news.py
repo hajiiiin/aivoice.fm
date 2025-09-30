@@ -25,11 +25,11 @@ def extract_date_from_html(soup) -> str:
         date_tag = soup.select_one("div.datepicker-wrapper span.date")
         day_tag = soup.select_one("div.datepicker-wrapper span.day")
         if not date_tag or not day_tag:
-            return "뉴스 쉽니다"
+            return None
         year, month, day = map(int, date_tag.text.strip().split('.'))
-        return f"{year}년 {month}월 {day}일 {day_tag.text.strip()} 뉴스 알려드립니다~"
+        return f"{year}년 {month}월 {day}일 {day_tag.text.strip()}"
     except:
-        return "뉴스 쉽니다"
+        return None
 
 # 뉴스 항목 파싱
 def parse_news_items(container, selector="a.box-content", exclude_title_keywords=None):

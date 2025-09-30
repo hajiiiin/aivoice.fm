@@ -7,6 +7,7 @@ export default function Dashboard() {
   const [selectedBlocksShow, setSelectedBlocksShow] = useState([]);
   const [scripts, setScripts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [language, setLanguage] = useState<"ko" | "en">("ko");
 
   const handlePlayRadio = async () => {
     alert("라디오 스크립트 생성 시작!");
@@ -16,7 +17,7 @@ export default function Dashboard() {
       const res = await fetch("/api/run-radio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocks: selectedBlocks, keyword }),
+        body: JSON.stringify({ blocks: selectedBlocks, keyword, language }),
       });
 
       if (res.ok) {
@@ -37,7 +38,32 @@ export default function Dashboard() {
   return (
     <main className=" mx-auto max-w-xl py-8">
       <h1 className="text-3xl font-bold">🎙️ AI 라디오 설정</h1>
-
+      <section className="mt-6">
+        <label>언어 선택:</label>
+        <div className="mt-2 flex gap-4">
+          <button
+            onClick={() => setLanguage("ko")}
+            className={`rounded-lg px-4 py-2 ${
+              language === "ko"
+                ? "bg-emerald-600 text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            한국어
+          </button>
+          <button
+            onClick={() => setLanguage("en")}
+            className={`rounded-lg px-4 py-2 ${
+              language === "en"
+                ? "bg-emerald-600 text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            English
+          </button>
+        </div>
+      </section>
+      
       <section className="mt-6">
         <label>오늘의 키워드:</label>
         <input
