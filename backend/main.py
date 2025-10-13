@@ -45,9 +45,9 @@ def run_radio(selected: dict = Body(...)):
     prev_type, context = None, ""
 
     # 오프닝 
-    # opening = generate_opening_ment(keyword, language=language)
-    # scripts.append({"type": "opening", "content": opening})
-    # prev_type, context = "opening", opening[-400:]
+    opening = generate_opening_ment(keyword, language=language)
+    scripts.append({"type": "opening", "content": opening})
+    prev_type, context = "opening", opening[-400:]
 
     # 선택된 블록 순서대로 실행
     for block in blocks:
@@ -57,7 +57,7 @@ def run_radio(selected: dict = Body(...)):
             prev_type, context = block, content[-400:]
 
     # 클로징        
-    # closing = generate_closing_ment(keyword, language=language)
-    # scripts.append({"type": "closing", "content": closing})
+    closing = generate_closing_ment(keyword, language=language)
+    scripts.append({"type": "closing", "content": closing})
 
     return {"scripts": scripts}
