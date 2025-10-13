@@ -11,9 +11,10 @@ def block_story_main(
     keyword=None,
     prev_type=None,
     context=None,
+    language="ko",
     last_song=None,
     is_last=False,
-    language="ko"
+    
 ):
     author = story.get("author", "익명 청취자" if language == "ko" else "Anonymous Listener")
     content = story["content"]
@@ -116,8 +117,9 @@ def block_story_main(
                     "role": "user",
                     "content": f"""
                     The following story is written in Korean.
-                    Translate it internally if needed, but your final output must be in English.
-
+                    You may translate it internally to understand it,
+                    but your final output MUST be written ONLY in English.
+                    
                     Story:
                     \"\"\"
                     {content}
