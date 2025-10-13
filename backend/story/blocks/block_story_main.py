@@ -115,8 +115,8 @@ def block_story_main(
                 {
                     "role": "user",
                     "content": f"""
-                    The following story is written in Korean (do NOT translate it, just use as context).  
-                    Your response MUST be ONLY in English.  
+                    The following story is written in Korean.
+                    Translate it internally if needed, but your final output must be in English.
 
                     Story:
                     \"\"\"
